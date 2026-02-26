@@ -1,46 +1,16 @@
-# import google.generativeai as genai
-import requests
-
-# 1. Configuration de ton agent Google (Gemini)
-# Tu lui déclares l'outil (la fonction) qu'il a le droit d'utiliser
-model = genai.GenerativeModel(
-    model_name='gemini-2.5-pro',
-    tools=[declaration_outil_remboursement] # Ta déclaration d'outil
-)
-
-# 2. L'utilisateur fait une demande
-response = model.generate_content("Rembourse 50€ pour la commande CMD-123.")
-
-# 3. INTERCEPTION : Gemini veut utiliser un outil !
-if response.function_call:
-    nom_outil = response.function_call.name
-    arguments = type(response.function_call.args).to_dict(response.function_call.args)
-    
-    print(f"🤖 Gemini propose d'exécuter : {nom_outil} avec {arguments}")
-    
-    # 4. LA DOUANE : On demande à Rippletide avant d'aller plus loin
-    decision_rippletide = requests.post(
-        "https://agent.rippletide.com/api/sdk/action/evaluate",
-        headers={"x-api-key": "TA_CLE_RIPPLETIDE"},
-        json={"action_name": nom_outil, "parameters": arguments}
-    ).json()
-    
-    # 5. L'EXÉCUTION DÉTERMINISTE
-    if decision_rippletide.get("approved") == True:
-        # FEU VERT : Ton code exécute la vraie action
-        resultat_reel = executer_vrai_remboursement_stripe(arguments)
-        
-        # Tu renvoies le succès à Gemini pour qu'il finisse sa phrase
-        reponse_finale = model.generate_content(f"Succès de l'outil : {resultat_reel}")
-        
-    else:
-        # FEU ROUGE : Rippletide a bloqué l'action
-        raison = decision_rippletide.get("reason")
-        print(f"❌ Rippletide a bloqué l'action : {raison}")
-        
-        # Tu renvoies l'échec à Gemini pour qu'il explique le refus à l'utilisateur
-        reponse_finale = model.generate_content(
-            f"L'outil a été bloqué par les règles métier. Raison: {raison}. Explique-le à l'utilisateur."
-        )
-
-print(reponse_finale.text)
+Penser Data Access / Data Product -> Pr faciliter l'accès à la donnée -> pr préparer nos plateformes data à consommer les données 
+First step : socle GCP en application avec le projet hubble (lien Abir) 
+et après voir comment on ouvre le sujet sur l'on premise 
+Bien avoir en tête l'open source aussi 
+ 
+à regarder : 
+Semantic : étude des contrats : https://bitol-io.github.io/open-data-contract-standard/v3.1.0/ à comparer https://www.snowflake.com/en/blog/osi-initiative-expands-partners/
+Semantic dans GCP https://medium.astrafy.io/bigquerys-native-semantic-layer-the-graph-approach-4ba8aa3aa965?gi=5cf8c4327c2d -> PM vision ? 
+Graphe : Graphe Context usages dans les agent 
+Agent : Decision runtime 
+Reprise des travaux de Julien : Dataplex et ADK 
+AGENT Starburst -> à regarder mais l'idée est plutôt de créer l'agent 
+NB : Starburst en mode proxy 
+MCP BQ -> synchro Greg 
+Definition: Open Data Contract Standard (ODCS) - Open Data Contract Standard
+Details of the Open Data Contract Standard (ODCS). Includes fundamentals, datasets, schemas, data quality, pricing, stakeholders, roles, service-level agreements and other properties.
