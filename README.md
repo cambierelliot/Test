@@ -58,3 +58,29 @@ Ouverture vers le On-Premise :
 Une fois le modèle GCP prouvé, collaborer avec le collègue travaillant sur l'intégration MCP (Model Context Protocol) et Starburst.
 
 Objectif : Étendre cette nouvelle vision unifiée aux données hébergées sur nos propres serveurs (On-Prem).
+
+
+1. Décortiquer le standard ODCS (La théorie)
+Action : Lis la documentation de l'ODCS (version 3.1.0, comme noté sur ton tableau).
+
+Livrable : Fais-toi une "fiche de synthèse" claire : Quelles sont les sections obligatoires d'un contrat ? (Schéma, Qualité, SLA, Métadonnées, etc.).
+
+2. Mapper ODCS avec Dataplex (Le pont technique)
+Action : Explore la documentation de GCP Dataplex.
+
+Livrable : Crée un petit tableau d'équivalence. Par exemple : Concept ODCS X = Outil Dataplex Y. Cela te servira de base pour ton architecture.
+
+3. Explorer le projet "Hubble" (Le bac à sable)
+Action : Demande les accès au projet Hubble si ce n'est pas déjà fait. Regarde à quoi ressemblent les données (Quelles tables ? Quel volume ? Quelles erreurs potentielles ?).
+
+Livrable : Choisis une table ou un petit set de données précis qui servira de cobaye pour ton PoC (Proof of Concept).
+
+4. Rédiger ton premier "Data Contract" (La pratique)
+Action : Pour la donnée cobaye de Hubble que tu as choisie, écris "à la main" ton tout premier fichier de contrat de données en respectant le standard ODCS.
+
+Livrable : Un fichier YAML/JSON propre que tu pourras présenter à ton tuteur comme point de départ.
+
+5. Préparer le "Match des Agents" (La vision PM)
+Action : Documente ce que sait faire l'Agent actuel (celui que tu as déjà dev et qui sort des colonnes) avec l'ancienne architecture.
+
+Livrable : Liste les questions/prompts auxquels le "Nouvel Agent" (celui branché sur le contrat et la sémantique) devra être capable de répondre pour prouver sa supériorité.
