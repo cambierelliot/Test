@@ -84,3 +84,6 @@ Livrable : Un fichier YAML/JSON propre que tu pourras présenter à ton tuteur c
 Action : Documente ce que sait faire l'Agent actuel (celui que tu as déjà dev et qui sort des colonnes) avec l'ancienne architecture.
 
 Livrable : Liste les questions/prompts auxquels le "Nouvel Agent" (celui branché sur le contrat et la sémantique) devra être capable de répondre pour prouver sa supériorité.
+
+
+téléchargement
