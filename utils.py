@@ -71,7 +71,7 @@ def call_agent_1(query: str) -> str:
 
     # ── Production ──
     try:
-                token = get_access_token()
+        token = get_access_token()
         headers = {
             "Authorization": f"Bearer {token}",
             "Content-Type": "application/json"
@@ -147,7 +147,7 @@ def call_agent_2(query: str) -> str:
 
     # ── Production ──
     try:
-                token = get_access_token()
+        token = get_access_token()
         headers = {
             "Authorization": f"Bearer {token}",
             "Content-Type": "application/json"
@@ -300,7 +300,7 @@ def fetch_all_contracts() -> list[dict]:
                 "yaml_str": row["contract_yaml"],
                 "contract": yaml.safe_load(row["contract_yaml"]),
             })
-                return contracts
+        return contracts
     """
     import yaml
 
