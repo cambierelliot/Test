@@ -14,19 +14,45 @@ MODE PRODUCTION (futur) : USE_MOCK = False
 import time
 import os
 import streamlit as st
+import requests
+from google.auth.transport.requests import Request
+from google.oauth2 import service_account
+import google.auth
+
+# Import de la configuration centralisée
+from config import (
+    USE_MOCK,
+    PROJECT_ID,
+    LOCATION,
+    REASONING_ENGINE_ID,
+    REASONING_ENGINE_ENDPOINT,
+    MOCK_YAML_PATH,
+    API_TIMEOUT,
+    CACHE_TTL,
+    BIGQUERY_DATASET,
+)
+
+# Pour différencier les agents, on peut utiliser des paramètres différents
+# Agent 1 : sans contrat sémantique
+# Agent 2 : avec contrat sémantique
+AGENT_1_ENDPOINT = REASONING_ENGINE_ENDPOINT
+AGENT_2_ENDPOINT = REASONING_ENGINE_ENDPOINT
+
 
 # ─────────────────────────────────────────────────────────────────────────────
-# CONFIGURATION — basculer ici pour passer en mode production
+# Authentification Google Cloud
 # ─────────────────────────────────────────────────────────────────────────────
 
-USE_MOCK = True  # True = données simulées | False = vrais appels (à implémenter)
-
-# Chemin du fichier YAML de test (relatif à l'emplacement de utils.py)
-_YAML_MOCK_PATH = os.path.join(os.path.dirname(__file__), "county_natality.yaml")
-
-# URL de l'endpoint IA (sera utilisé quand USE_MOCK = False)
-AGENT_1_ENDPOINT = "https://your-agent1-endpoint/v1/query"
-AGENT_2_ENDPOINT = "https://your-agent2-endpoint/v1/query"
+def get_access_token() -> str:
+    """
+    Récupère un token d'accès pour l'authentification Google Cloud.
+    Utilise les credentials par défaut (ADC - Application Default Credentials).
+    """
+    credentials, project = google.auth.default(
+        scopes=['https://www.googleapis.com/auth/cloud-platform']
+    )
+    credentials.refresh(Request())
+    return credentials.token
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -36,22 +62,47 @@ AGENT_2_ENDPOINT = "https://your-agent2-endpoint/v1/query"
 def call_agent_1(query: str) -> str:
     """
     Appelle l'Agent 1 (schémas uniquement).
-
-    En production, remplacer le bloc mock par :
-        import requests
-        response = requests.post(AGENT_1_ENDPOINT, json={"query": query}, timeout=30)
-        return response.json()["sql"]
+    
+    En mode production, interroge le Reasoning Engine sans contrat sémantique.
     """
     if USE_MOCK:
         time.sleep(2)
         return _mock_agent_1(query)
 
-    # ── Production (à décommenter) ──
-    # import requests
-    # resp = requests.post(AGENT_1_ENDPOINT, json={"query": query}, timeout=30)
-    # resp.raise_for_status()
-    # return resp.json().get("answer", "")
-    raise NotImplementedError("Mode production non configuré.")
+    # ── Production ──
+    try:
+                token = get_access_token()
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json"
+        }
+        
+        # Payload pour l'agent 1 : format ADK
+        payload = {
+            "appName": "text_to_sql_agent",
+            "userId": "streamlit_user",
+            "sessionId": f"session_{int(time.time())}",
+            "newMessage": {
+                "role": "user",
+                "parts": [
+                    {"text": query}
+                ]
+            }
+        }
+        
+        response = requests.post(
+            AGENT_1_ENDPOINT,
+            headers=headers,
+            json=payload,
+            timeout=API_TIMEOUT
+        )
+        response.raise_for_status()
+        
+        result = response.json()
+        return _format_agent_response(query, result, agent_name="Agent 1")
+        
+    except Exception as e:
+        return f"**Erreur lors de l'appel à l'Agent 1**\n\n```\n{str(e)}\n```"
 
 
 def _mock_agent_1(query: str) -> str:
@@ -87,22 +138,47 @@ Aucune règle métier (exclusions, aliases sémantiques) n'a été appliquée.
 def call_agent_2(query: str) -> str:
     """
     Appelle l'Agent 2 (schémas + couche sémantique).
-
-    En production, remplacer le bloc mock par :
-        import requests
-        response = requests.post(AGENT_2_ENDPOINT, json={"query": query}, timeout=30)
-        return response.json()["sql"]
+    
+    En mode production, interroge le Reasoning Engine avec contrat sémantique.
     """
     if USE_MOCK:
         time.sleep(2)
         return _mock_agent_2(query)
 
-    # ── Production (à décommenter) ──
-    # import requests
-    # resp = requests.post(AGENT_2_ENDPOINT, json={"query": query}, timeout=30)
-    # resp.raise_for_status()
-    # return resp.json().get("answer", "")
-    raise NotImplementedError("Mode production non configuré.")
+    # ── Production ──
+    try:
+                token = get_access_token()
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json"
+        }
+        
+        # Payload pour l'agent 2 : format ADK
+        payload = {
+            "appName": "text_to_sql_agent_semantic",
+            "userId": "streamlit_user",
+            "sessionId": f"session_{int(time.time())}",
+            "newMessage": {
+                "role": "user",
+                "parts": [
+                    {"text": query}
+                ]
+            }
+        }
+        
+        response = requests.post(
+            AGENT_2_ENDPOINT,
+            headers=headers,
+            json=payload,
+            timeout=API_TIMEOUT
+        )
+        response.raise_for_status()
+        
+        result = response.json()
+        return _format_agent_response(query, result, agent_name="Agent 2")
+        
+    except Exception as e:
+        return f"**Erreur lors de l'appel à l'Agent 2**\n\n```\n{str(e)}\n```"
 
 
 def _mock_agent_2(query: str) -> str:
@@ -148,11 +224,52 @@ conformément au glossaire Dataplex).
 """
 
 
+def _format_agent_response(query: str, result: dict, agent_name: str) -> str:
+    """
+    Formate la réponse du Reasoning Engine pour l'affichage dans Streamlit.
+    
+    Args:
+        query: La question posée par l'utilisateur
+        result: La réponse JSON du Reasoning Engine
+        agent_name: Nom de l'agent (pour le contexte)
+    
+    Returns:
+        Réponse formatée en Markdown
+    """
+    # Adapter selon la structure réelle de la réponse du Reasoning Engine
+    # Voici un exemple de structure possible :
+    
+    output = f"**Question :** {query}\n\n"
+    
+    # Extraire la requête SQL si disponible
+    if "output" in result:
+        response_data = result["output"]
+        
+        if isinstance(response_data, dict):
+            sql_query = response_data.get("sql", response_data.get("query", ""))
+            explanation = response_data.get("explanation", "")
+            
+            if sql_query:
+                output += "**Requête SQL générée**\n\n"
+                output += f"```sql\n{sql_query}\n```\n\n"
+            
+            if explanation:
+                output += f"> {explanation}\n"
+        else:
+            # Si la réponse est une chaîne simple
+            output += str(response_data)
+    else:
+        # Fallback : afficher toute la réponse
+        output += f"```json\n{result}\n```"
+    
+    return output
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Contrat sémantique — chargement (mis en cache)
 # ─────────────────────────────────────────────────────────────────────────────
 
-@st.cache_data(ttl=3600, show_spinner="Chargement du contrat sémantique…")
+@st.cache_data(ttl=CACHE_TTL, show_spinner="Chargement du contrat sémantique…")
 def fetch_all_contracts() -> list[dict]:
     """
     Renvoie la liste des contrats sémantiques parsés (un par table du dataset).
@@ -183,13 +300,13 @@ def fetch_all_contracts() -> list[dict]:
                 "yaml_str": row["contract_yaml"],
                 "contract": yaml.safe_load(row["contract_yaml"]),
             })
-        return contracts
+                return contracts
     """
     import yaml
 
     if USE_MOCK:
         time.sleep(0.5)  # latence simulée
-        with open(_YAML_MOCK_PATH, "r", encoding="utf-8") as f:
+        with open(MOCK_YAML_PATH, "r", encoding="utf-8") as f:
             yaml_str = f.read()
         contract = yaml.safe_load(yaml_str)
         return [
@@ -201,4 +318,28 @@ def fetch_all_contracts() -> list[dict]:
         ]
 
     # ── Production ──
-    raise NotImplementedError("Mode production non configuré.")
+    try:
+        from google.cloud import bigquery
+        
+        client = bigquery.Client(project=PROJECT_ID)
+        sql = f'''
+            SELECT table_name, contract_yaml
+            FROM `{PROJECT_ID}.{BIGQUERY_DATASET}._table_contract`
+        '''
+        
+        rows = list(client.query(sql))
+        contracts = []
+        
+        for row in rows:
+            import yaml
+            contracts.append({
+                "table": row["table_name"],
+                "yaml_str": row["contract_yaml"],
+                "contract": yaml.safe_load(row["contract_yaml"]),
+            })
+        
+        return contracts
+        
+    except Exception as e:
+        st.error(f"Erreur lors du chargement des contrats depuis BigQuery : {e}")
+        return []
