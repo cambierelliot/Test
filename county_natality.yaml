@@ -1,0 +1,518 @@
+dataContractSpecification: 0.9.3
+id: urn:datacontract:nxs-tes-nxhmr-sbx-11462292:test_agent:county_natality
+version: 1.0.0
+status: active
+info:
+  title: County Natality
+  version: 1.0.0
+  description: Table county_natality
+  owner: Data Team
+  contact:
+    name: Data Team
+    email: data-team@company.com
+servers:
+  production:
+    type: bigquery
+    project: nxs-tes-nxhmr-sbx-11462292
+    dataset: test_agent
+    location: europe-west1
+    description: Production BigQuery dataset test_agent
+terms:
+  usage: This data can be used for analytics and reporting purposes.
+  limitations: Data is updated daily. May have up to 24 hour delay.
+  billing: Charged to data platform cost center
+  noticePeriod: 30 days
+schema:
+  type: bigquery
+  specification: bigquery-schema
+  tables:
+  - name: county_natality
+    type: table
+    description: Table county_natality
+    physicalName: '`nxs-tes-nxhmr-sbx-11462292.test_agent.county_natality`'
+    columns:
+    - name: Year
+      type: date
+      description: Représente l'année civile au cours de laquelle les naissances ont
+        été enregistrées. Cette colonne est essentielle pour analyser les tendances
+        temporelles de la natalité, comparer les statistiques d'une année sur l'autre
+        et réaliser des projections démographiques. Les valeurs typiques sont des
+        années récentes au format AAAA.
+      businessName: Année de Naissance
+      logicalType: date
+      physicalType: DATE
+      isNullable: true
+      isUnique: false
+      isPrimaryKey: false
+      classification: internal
+      pii: false
+      tags: []
+      examples:
+      - '2018'
+      - '2019'
+      - '2020'
+    - name: County_of_Residence
+      type: string
+      description: Désigne le nom du comté où réside officiellement la mère au moment
+        de la naissance, ce qui peut différer du lieu réel de l'accouchement. Cette
+        information est utilisée pour la cartographie démographique et l'allocation
+        des ressources de santé publique au niveau local. Elle est directement liée
+        à la colonne du code FIPS pour une identification sans ambiguïté.
+      businessName: Comté de Résidence
+      logicalType: string
+      physicalType: STRING
+      isNullable: true
+      isUnique: false
+      isPrimaryKey: false
+      classification: internal
+      pii: false
+      tags: []
+      examples:
+      - Los Angeles County, CA
+      - Cook County, IL
+      - Miami-Dade County, FL
+    - name: County_of_Residence_FIPS
+      type: string
+      description: Code standardisé (Federal Information Processing Standard) identifiant
+        de manière unique le comté de résidence de la mère. Ce code numérique est
+        crucial pour effectuer des jointures fiables avec d'autres bases de données
+        gouvernementales, économiques ou géospatiales. Il comporte généralement 5
+        chiffres, dont les deux premiers représentent l'état et les trois derniers
+        le comté.
+      businessName: Code FIPS du Comté
+      logicalType: string
+      physicalType: STRING
+      isNullable: true
+      isUnique: false
+      isPrimaryKey: false
+      classification: internal
+      pii: false
+      tags: []
+      examples:
+      - '06037'
+      - '17031'
+      - '12086'
+    - name: Births
+      type: integer
+      description: Indique le nombre total de naissances vivantes recensées dans le
+        comté pour l'année donnée. C'est l'indicateur de volume principal pour évaluer
+        la dynamique de la population, calculer les taux de natalité et dimensionner
+        les infrastructures de maternité ou de petite enfance. Les valeurs varient
+        fortement de quelques dizaines à plusieurs dizaines de milliers selon la taille
+        du comté.
+      businessName: Nombre de Naissances
+      logicalType: integer
+      physicalType: INTEGER
+      isNullable: true
+      isUnique: false
+      isPrimaryKey: false
+      classification: internal
+      pii: false
+      tags: []
+      examples:
+      - '150'
+      - '45230'
+      - '1205'
+    - name: Ave_Age_of_Mother
+      type: float
+      description: Représente l'âge moyen des mères au moment de l'accouchement pour
+        un comté et une année spécifiques. Cette métrique permet d'étudier les comportements
+        sociodémographiques, comme le recul de l'âge de la maternité, et d'évaluer
+        les risques obstétricaux globaux d'une population. Les valeurs moyennes se
+        situent généralement entre 25 et 32 ans.
+      businessName: Âge Moyen de la Mère
+      logicalType: float
+      physicalType: FLOAT
+      isNullable: true
+      isUnique: false
+      isPrimaryKey: false
+      classification: internal
+      pii: false
+      tags: []
+      examples:
+      - '27.5'
+      - '29.1'
+      - '31.2'
+    - name: Ave_OE_Gestational_Age_Wks
+      type: float
+      description: Mesure l'âge gestationnel moyen en semaines, calculé selon l'estimation
+        obstétricale (OE - Obstetric Estimate). C'est la norme clinique actuelle la
+        plus précise pour évaluer la durée de la grossesse et surveiller les taux
+        de prématurité au sein d'une population. Les valeurs normales pour une grossesse
+        à terme tournent autour de 38 à 40 semaines.
+      businessName: Âge Gestationnel Moyen (Estimation Obstétricale)
+      logicalType: float
+      physicalType: FLOAT
+      isNullable: true
+      isUnique: false
+      isPrimaryKey: false
+      classification: internal
+      pii: false
+      tags: []
+      examples:
+      - '38.5'
+      - '39.1'
+      - '37.9'
+    - name: Ave_LMP_Gestational_Age_Wks
+      type: float
+      description: Indique l'âge gestationnel moyen en semaines basé sur la date des
+        dernières menstruations (LMP - Last Menstrual Period). Bien que souvent remplacée
+        par l'estimation obstétricale (OE) qui est plus précise, cette donnée historique
+        reste utilisée pour des études épidémiologiques comparatives à long terme.
+        Les valeurs attendues sont proches de 39 semaines.
+      businessName: Âge Gestationnel Moyen (Dernières Règles)
+      logicalType: float
+      physicalType: FLOAT
+      isNullable: true
+      isUnique: false
+      isPrimaryKey: false
+      classification: internal
+      pii: false
+      tags: []
+      examples:
+      - '38.7'
+      - '39.2'
+      - '38.1'
+    - name: Ave_Birth_Weight_gms
+      type: float
+      description: Correspond au poids moyen des nouveau-nés à la naissance, exprimé
+        en grammes. Cet indicateur de santé publique majeur permet d'identifier les
+        zones géographiques présentant des risques de retards de croissance intra-utérins,
+        de malnutrition ou de macrosomie. La moyenne standard se situe généralement
+        entre 3200 et 3400 grammes.
+      businessName: Poids Moyen à la Naissance (grammes)
+      logicalType: float
+      physicalType: FLOAT
+      isNullable: true
+      isUnique: false
+      isPrimaryKey: false
+      classification: internal
+      pii: false
+      tags: []
+      examples:
+      - '3250.5'
+      - '3310.0'
+      - '3195.2'
+    - name: Ave_Pre_pregnancy_BMI
+      type: float
+      description: Représente l'Indice de Masse Corporelle (IMC) moyen des mères avant
+        le début de leur grossesse. Cette donnée est utilisée par les autorités de
+        santé pour corréler l'état de santé maternel initial avec les issues de grossesse,
+        comme le poids du bébé ou les risques de complications. Les moyennes varient
+        souvent entre 24 et 29 selon les régions.
+      businessName: IMC Moyen Avant Grossesse
+      logicalType: float
+      physicalType: FLOAT
+      isNullable: true
+      isUnique: false
+      isPrimaryKey: false
+      classification: internal
+      pii: false
+      tags: []
+      examples:
+      - '25.4'
+      - '26.8'
+      - '28.1'
+    - name: Ave_Number_of_Prenatal_Wks
+      type: float
+      description: Indique le nombre moyen de visites prénatales effectuées par les
+        mères durant leur grossesse. C'est un indicateur clé de l'accès aux soins
+        de santé maternelle, de la prévention des risques et du suivi médical dans
+        un comté donné. Une grossesse bien suivie compte généralement entre 10 et
+        14 visites prénatales.
+      businessName: Nombre Moyen de Visites Prénatales
+      logicalType: float
+      physicalType: FLOAT
+      isNullable: true
+      isUnique: false
+      isPrimaryKey: false
+      classification: internal
+      pii: false
+      tags: []
+      examples:
+      - '11.2'
+      - '12.5'
+      - '9.8'
+quality:
+  type: SodaCL
+  specification: "checks for county_natality:\n  - row_count > 0\n  - missing_count(*)\
+    \ = 0\n  - freshness(*) < 24h\n"
+sla:
+  interval: daily
+  cron: 0 2 * * *
+  freshness:
+    threshold: 24 hours
+    description: Data must be updated within 24 hours
+  availability:
+    percentage: 99.5
+roles:
+- name: Data Owner
+  role: owner
+  description: Responsible for data quality and governance
+  contact:
+    name: Data Team
+    email: data-team@company.com
+- name: Data Steward
+  role: steward
+  description: Day-to-day data management
+  contact:
+    name: Data Engineering
+    email: data-eng@company.com
+lineage:
+  upstream: []
+  downstream: []
+customProperties:
+  bigquery:
+    projectId: nxs-tes-nxhmr-sbx-11462292
+    datasetId: test_agent
+    tableId: county_natality
+    numRows: 1878
+    sizeBytes: 172488
+    created: '2026-02-27T14:05:11.945000+00:00'
+    modified: '2026-03-05T09:36:22.912000+00:00'
+    partitionField: null
+    clusteringFields: []
+  dataplex:
+    glossary:
+    - term: FIPS
+      definition: Acronyme pour Federal Information Processing Standard. Il s'agit
+        d'un code numérique standardisé, généralement à 5 chiffres, utilisé par le
+        gouvernement américain pour identifier de manière unique les comtés et entités
+        géographiques équivalentes. Les deux premiers chiffres désignent l'état et
+        les trois derniers le comté, ce qui est indispensable pour les jointures de
+        bases de données géospatiales et gouvernementales.
+      synonyms:
+      - Code FIPS
+      - FIPS Code
+      - County Code
+      - Identifiant de comté
+      relatedTerms:
+      - County_of_Residence
+      - Comté
+      - Géocodage
+      category: géographie
+      examples:
+      - 06037 (Los Angeles County, CA)
+      - 36061 (New York County, NY)
+      - 48201 (Harris County, TX)
+    - term: OE
+      definition: Acronyme pour Obstetric Estimate (Estimation Obstétricale). C'est
+        la méthode clinique de référence actuelle pour déterminer l'âge gestationnel
+        d'un fœtus, combinant la date des dernières règles avec des examens échographiques
+        précoces. Cette mesure est considérée comme beaucoup plus précise que la méthode
+        traditionnelle basée uniquement sur les menstruations.
+      synonyms:
+      - Obstetric Estimate
+      - Estimation obstétricale
+      - OE Gestational Age
+      relatedTerms:
+      - Âge gestationnel
+      - LMP
+      - Prématurité
+      category: santé
+      examples:
+      - 38.5 semaines
+      - 39.2 semaines
+    - term: LMP
+      definition: Acronyme pour Last Menstrual Period (Date des dernières menstruations
+        ou DDR en français). C'est la méthode historique de calcul de l'âge gestationnel
+        qui se base sur le premier jour des dernières règles de la mère. Bien qu'utile
+        pour les études épidémiologiques comparatives à long terme, elle est souvent
+        sujette à des erreurs de mémorisation ou des cycles irréguliers.
+      synonyms:
+      - Last Menstrual Period
+      - DDR
+      - Date des dernières règles
+      relatedTerms:
+      - Âge gestationnel
+      - OE
+      - Semaines d'aménorrhée
+      category: santé
+      examples:
+      - 39.0 semaines
+      - 40.1 semaines
+    - term: BMI
+      definition: Acronyme pour Body Mass Index, traduit en français par Indice de
+        Masse Corporelle (IMC). Dans le contexte de cette table, il s'agit de l'IMC
+        moyen de la mère calculé avant le début de la grossesse (Pre-pregnancy BMI).
+        Cet indicateur de santé publique permet d'évaluer les risques de complications
+        obstétricales liés à la dénutrition, au surpoids ou à l'obésité maternelle.
+      synonyms:
+      - IMC
+      - Indice de Masse Corporelle
+      - Pre-pregnancy BMI
+      - IMC pré-grossesse
+      relatedTerms:
+      - Poids à la naissance
+      - Santé maternelle
+      category: santé
+      examples:
+      - 24.5 (Poids normal)
+      - 28.2 (Surpoids)
+      - 31.0 (Obésité)
+    - term: Âge gestationnel
+      definition: Mesure de la durée de la grossesse, généralement exprimée en semaines
+        complètes. Une grossesse à terme est comprise entre 37 et 42 semaines, tandis
+        qu'une naissance survenant avant 37 semaines est qualifiée de prématurée.
+        Dans cette base de données, il est évalué soit par estimation obstétricale
+        (OE), soit par la date des dernières règles (LMP).
+      synonyms:
+      - Gestational Age
+      - GA
+      - Durée de grossesse
+      - Semaines d'aménorrhée
+      relatedTerms:
+      - OE
+      - LMP
+      - Prématurité
+      - Terme
+      category: santé
+      examples:
+      - 39 semaines (À terme)
+      - 34 semaines (Prématuré)
+    - term: Poids à la naissance
+      definition: Mesure de la masse corporelle du nouveau-né au moment de l'accouchement,
+        exprimée ici en grammes (gms). C'est un indicateur fondamental de la santé
+        publique infantile qui permet de détecter les retards de croissance intra-utérins,
+        la prématurité ou les cas de macrosomie fœtale. Un poids normal à terme se
+        situe généralement entre 2500g et 4000g.
+      synonyms:
+      - Birth Weight
+      - Poids néonatal
+      - Masse à la naissance
+      relatedTerms:
+      - BMI
+      - Âge gestationnel
+      - Macrosomie
+      - Retard de croissance
+      category: santé
+      examples:
+      - 3350 grammes
+      - 2400 grammes (Faible poids)
+      - 4100 grammes (Macrosomie)
+    - term: Visites prénatales
+      definition: Consultations médicales de suivi effectuées par la mère tout au
+        long de sa grossesse. Le nombre moyen de visites est un indicateur clé de
+        l'accès aux soins de santé maternelle, de la prévention des risques obstétricaux
+        et de la qualité du suivi médical dans un comté. Un suivi standard et complet
+        pour une grossesse sans complication comprend généralement entre 10 et 14
+        visites.
+      synonyms:
+      - Prenatal Visits
+      - Suivi de grossesse
+      - Consultations prénatales
+      - Prenatal Care
+      relatedTerms:
+      - Santé maternelle
+      - Âge gestationnel
+      category: santé
+      examples:
+      - 11.5 visites
+      - 12.8 visites
+    - term: Naissances vivantes
+      definition: Nombre total d'enfants nés en vie au cours d'une année civile dans
+        une zone géographique donnée (ici, le comté). Cet indicateur exclut les mortinaissances
+        et les fausses couches, et sert de base au calcul des taux de natalité et
+        de fécondité. C'est la métrique de volume principale pour les études démographiques
+        et l'allocation des ressources.
+      synonyms:
+      - Live Births
+      - Natalité
+      - Naissances recensées
+      relatedTerms:
+      - Births
+      - Taux de natalité
+      - Démographie
+      category: démographie
+      examples:
+      - 450 naissances
+      - 12500 naissances
+    - term: Âge maternel
+      definition: Âge de la mère au moment de l'accouchement, exprimé en années. L'âge
+        moyen des mères est un indicateur sociodémographique important qui reflète
+        les tendances sociétales, comme le recul de l'âge de la première grossesse.
+        Il permet également d'évaluer les risques médicaux globaux, les grossesses
+        tardives (plus de 35 ans) ou très précoces étant statistiquement plus à risque.
+      synonyms:
+      - Age of Mother
+      - Âge de la mère
+      - Maternal Age
+      relatedTerms:
+      - Naissances vivantes
+      - Santé maternelle
+      - Démographie
+      category: démographie
+      examples:
+      - 26.5 ans
+      - 31.2 ans
+    tags: []
+  ai:
+    embeddingModel: text-embedding-004
+    sampleQueries:
+    - question: Quel est le nombre total de naissances vivantes enregistrées dans
+        le comté identifié par le code FIPS '06037' au fil des années ?
+      sql: SELECT Year, SUM(Births) AS Total_Naissances_Vivantes FROM `nxs-tes-nxhmr-sbx-11462292.test_agent.county_natality`
+        WHERE County_of_Residence_FIPS = '06037' GROUP BY Year ORDER BY Year DESC
+      glossaryTermsUsed:
+      - FIPS
+      - Naissances vivantes
+      explanation: Cette requête filtre les données sur un code FIPS spécifique pour
+        identifier un comté unique et agrège les naissances vivantes par année pour
+        observer l'évolution démographique.
+    - question: Quels sont les 10 comtés ayant le poids à la naissance le plus faible
+        en 2022, et quel est leur âge gestationnel moyen selon l'estimation obstétricale
+        (OE) par rapport à la méthode LMP ?
+      sql: SELECT County_of_Residence, Ave_Birth_Weight_gms, Ave_OE_Gestational_Age_Wks,
+        Ave_LMP_Gestational_Age_Wks FROM `nxs-tes-nxhmr-sbx-11462292.test_agent.county_natality`
+        WHERE EXTRACT(YEAR FROM Year) = 2022 ORDER BY Ave_Birth_Weight_gms ASC LIMIT
+        10
+      glossaryTermsUsed:
+      - Poids à la naissance
+      - Âge gestationnel
+      - OE
+      - LMP
+      explanation: La requête trie les comtés par poids à la naissance ascendant pour
+        une année précise et compare les deux méthodes de calcul de l'âge gestationnel
+        (OE, plus précise, et LMP, historique).
+    - question: Quelle est la moyenne de l'âge maternel dans les comtés où l'IMC pré-grossesse
+        (BMI) moyen est supérieur à 29, indiquant une tendance au surpoids ?
+      sql: SELECT County_of_Residence, AVG(Ave_Age_of_Mother) AS Age_Maternel_Moyen,
+        AVG(Ave_Pre_pregnancy_BMI) AS BMI_Moyen FROM `nxs-tes-nxhmr-sbx-11462292.test_agent.county_natality`
+        WHERE Ave_Pre_pregnancy_BMI > 29 GROUP BY County_of_Residence ORDER BY BMI_Moyen
+        DESC
+      glossaryTermsUsed:
+      - Âge maternel
+      - BMI
+      explanation: Cette requête identifie les zones géographiques avec un IMC pré-grossesse
+        élevé et calcule l'âge maternel moyen correspondant pour analyser de potentiels
+        risques obstétricaux croisés.
+    - question: Quels comtés présentent un suivi médical insuffisant avec moins de
+        10 visites prénatales en moyenne, et quel est leur volume total de naissances
+        vivantes ?
+      sql: SELECT County_of_Residence, SUM(Births) AS Total_Naissances_Vivantes, AVG(Ave_Number_of_Prenatal_Wks)
+        AS Moyenne_Visites_Prenatales FROM `nxs-tes-nxhmr-sbx-11462292.test_agent.county_natality`
+        WHERE Ave_Number_of_Prenatal_Wks < 10 GROUP BY County_of_Residence ORDER BY
+        Total_Naissances_Vivantes DESC
+      glossaryTermsUsed:
+      - Visites prénatales
+      - Naissances vivantes
+      explanation: La requête filtre les comtés ayant un suivi médical inférieur au
+        standard recommandé (moins de 10 visites prénatales) et calcule la somme des
+        naissances vivantes pour mesurer l'impact de ce déficit de suivi.
+    - question: Quel est le poids à la naissance moyen et l'âge gestationnel (OE)
+        moyen pour les populations où l'âge maternel moyen indique des grossesses
+        tardives (plus de 35 ans) ?
+      sql: SELECT AVG(Ave_Birth_Weight_gms) AS Poids_Naissance_Global_Moyen, AVG(Ave_OE_Gestational_Age_Wks)
+        AS Age_Gestationnel_OE_Global_Moyen FROM `nxs-tes-nxhmr-sbx-11462292.test_agent.county_natality`
+        WHERE Ave_Age_of_Mother > 35
+      glossaryTermsUsed:
+      - Poids à la naissance
+      - Âge gestationnel
+      - OE
+      - Âge maternel
+      explanation: Cette requête calcule les moyennes globales de poids et d'âge gestationnel
+        basé sur l'estimation obstétricale (OE) pour la catégorie spécifique des mères
+        dont l'âge moyen dépasse 35 ans.
+  metricflow:
+    semanticModel: null
+    metrics: []
