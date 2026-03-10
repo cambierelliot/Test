@@ -88,3 +88,21 @@ Livrable : Liste les questions/prompts auxquels le "Nouvel Agent" (celui branch�
 
 [téléchargement
 ](https://secure.stidmobile-id.com/api/iosdeeplinking/download?Uuid=acd2ac4b343042b3bfcdcee41f2ac3fa&MobileApp=StidMobileId&HasCode=True)
+
+
+
+
+Agis en tant qu'ingénieur data expert sur Google Cloud Platform (GCP). J'ai besoin d'un script Python utilisant google-cloud-datacatalog pour générer un fichier YAML répertoriant mes tables et les "Business Terms" (termes de glossaire Dataplex) qui y sont associés.
+Contrainte technique majeure (Logique d'inversion) : > Dans ma configuration GCP, c'est le Terme du glossaire qui possède le rattachement vers les tables (les assets liés). Cependant, je veux que mon fichier YAML final soit dans le sens inverse : la Table en clé, et la liste de ses Termes en valeurs.
+Voici l'algorithme exact que ton script doit suivre :
+Initialiser les outils : Utilise DataCatalogClient pour GCP et collections.defaultdict(list) pour préparer un dictionnaire qui stockera les données inversées.
+Lister les termes du glossaire : Fais une requête list_entries pour récupérer tous les Business Terms de mon EntryGroup (glossaire Dataplex).
+Extraire les tables rattachées pour chaque terme : Pour chaque terme, récupère son nom lisible (display_name). Ensuite, inspecte l'entrée pour trouver les tables qui y sont rattachées (généralement via les ressources liées ou les relations de l'entrée Dataplex). Mets des commentaires clairs là où je devrai potentiellement adapter le chemin exact de l'attribut qui stocke ces tables selon ma configuration.
+Inverser la relation en Python : Pour chaque table trouvée dans un terme, ajoute ce terme à la liste de la table dans le dictionnaire.
+Exemple logique : dictionnaire_inversé[nom_de_la_table].append(nom_du_terme)
+Générer le YAML : Utilise la bibliothèque pyyaml pour exporter ce dictionnaire final dans un fichier .yaml.
+dataset_nom.table_1:
+  - Terme_Metier_A
+  - Terme_Metier_B
+dataset_nom.table_2:
+  - Terme_Metier_C
